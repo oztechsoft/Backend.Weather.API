@@ -1,0 +1,45 @@
+using Backend.Weather.API.Services;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Backend.Weather.API.Controllers;
+
+[ApiController]
+[Route("[controller]")]
+public class WeatherController : ControllerBase
+{
+    private readonly ILogger<WeatherController> _logger;
+    private readonly IWeatherService _weatherService;
+
+    public WeatherController(IWeatherService weatherService, ILogger<WeatherController> logger)
+    {
+        _weatherService = weatherService;
+        _logger = logger;
+    }
+
+    [HttpGet(Name = "GetWeather")]
+    public async Task<IActionResult> GetWeather(string city, string country)
+    {
+        if (string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(country))
+        {
+            _logger.LogWarning("City or country parameter is missing.");
+            return BadRequest("City and country parameters are required.");
+        }
+
+        try
+        {
+            var weather = await _weatherService.GetWeatherAsync(city, country);
+            if (weather == null)
+            {
+                _logger.LogWarning("Weather data not found for {City}, {Country}.", city, country);
+                return NotFound("Weather data not found.");
+            }
+
+            return Ok(weather);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while getting weather data for {City}, {Country}.", city, country);
+            return StatusCode(500, "An error occurred while processing your request.");
+        }
+    }
+}

@@ -1,12 +1,16 @@
-﻿namespace Backend.Weather.API.Models
+﻿using System.Text.Json.Serialization;
+
+namespace Backend.Weather.API.Models
 {
     public class OpenWeatherResponse
     {
-        public List<Weather> weather { get; set; }
+        [JsonPropertyName("weather")]
+        public List<Weather> Weather { get; set; }
     }
 
     public class Weather
     {
-        public string description { get; set; }
+        [JsonPropertyName("description")]
+        public string Description { get; set; }
     }
 }

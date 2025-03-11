@@ -15,6 +15,16 @@ namespace Backend.Weather.API
             builder.Services.AddHttpClient<IWeatherService, WeatherService>();
             builder.Services.AddSingleton<RateLimitingService>();
             builder.Services.AddMemoryCache();
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowLocalFrontend",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:5173")
+                              .AllowAnyMethod()
+                              .AllowAnyHeader();
+                    });
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -24,6 +34,7 @@ namespace Backend.Weather.API
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                app.UseCors("AllowLocalFrontend");
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }

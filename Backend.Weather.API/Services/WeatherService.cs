@@ -20,7 +20,7 @@ namespace Backend.Weather.API.Services
 
         public async Task<WeatherResponse> GetWeatherAsync(string city, string country)
         {
-            var apiKeys = _config.GetSection("OpenWeatherMapApiKeys").Get<string[]>();
+            var apiKeys = _config.GetSection("OpenWeatherMapApiKeys").Get<string[]>() ?? [];
             var url = $"https://api.openweathermap.org/data/2.5/weather?q={city},{country}&appid={apiKeys[0]}";
 
             try
@@ -34,10 +34,17 @@ namespace Backend.Weather.API.Services
 
                 var content = await response.Content.ReadAsStringAsync();
                 var weatherData = JsonSerializer.Deserialize<OpenWeatherResponse>(content);
+                if(weatherData?.Weather == null)
+                {
+                    _logger.LogWarning("No weather details found for {City}, {Country}.", city, country);
+                    return null;
+                }
+
+                var description = string.Join(", ", weatherData.Weather.Select(w => w.Description));
 
                 return new WeatherResponse
                 {
-                    Description = weatherData?.Weather?.FirstOrDefault()?.Description
+                    Description = description,
                 };
             }
             catch (Exception ex)

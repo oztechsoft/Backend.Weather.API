@@ -23,7 +23,7 @@ public class RateLimitingService
         if (!_validApiKeys.Contains(apiKey))
         {
             _logger.LogWarning("Invalid API key: {ApiKey}", apiKey);
-            return false;
+            throw new BadHttpRequestException("Invalid API key.");
         }
 
         string cacheKey = $"rate_limit_{apiKey}";

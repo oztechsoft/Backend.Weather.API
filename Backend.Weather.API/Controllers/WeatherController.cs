@@ -21,19 +21,19 @@ public class WeatherController : ControllerBase
     [HttpGet(Name = "GetWeather")]
     public async Task<IActionResult> GetWeather(string city, string country, [FromHeader] string apiKey)
     {
-        if (!_rateLimitingService.IsRequestAllowed(apiKey))
-        {
-            return BadRequest("hourly limit has been exceeded");
-        }
-
-        if (string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(country))
-        {
-            _logger.LogWarning("City or country parameter is missing.");
-            return BadRequest("City and country parameters are required.");
-        }
-
         try
         {
+            if (!_rateLimitingService.IsRequestAllowed(apiKey))
+            {
+                return BadRequest("hourly limit has been exceeded");
+            }
+
+            if (string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(country))
+            {
+                _logger.LogWarning("City or country parameter is missing.");
+                return BadRequest("City and country parameters are required.");
+            }
+
             var weather = await _weatherService.GetWeatherAsync(city, country);
             if (weather == null)
             {
@@ -42,6 +42,11 @@ public class WeatherController : ControllerBase
             }
 
             return Ok(weather);
+        }
+        catch (BadHttpRequestException ex)
+        {
+            _logger.LogWarning(ex, "Bad Request: {Message}.", ex.Message);
+            return BadRequest(ex.Message);
         }
         catch (Exception ex)
         {

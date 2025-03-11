@@ -9,16 +9,23 @@ public class WeatherController : ControllerBase
 {
     private readonly ILogger<WeatherController> _logger;
     private readonly IWeatherService _weatherService;
+    private readonly RateLimitingService _rateLimitingService;
 
-    public WeatherController(IWeatherService weatherService, ILogger<WeatherController> logger)
+    public WeatherController(IWeatherService weatherService, RateLimitingService rateLimitingService, ILogger<WeatherController> logger)
     {
         _weatherService = weatherService;
+        _rateLimitingService = rateLimitingService;
         _logger = logger;
     }
 
     [HttpGet(Name = "GetWeather")]
-    public async Task<IActionResult> GetWeather(string city, string country)
+    public async Task<IActionResult> GetWeather(string city, string country, [FromHeader] string apiKey)
     {
+        if (!_rateLimitingService.IsRequestAllowed(apiKey))
+        {
+            return BadRequest("hourly limit has been exceeded");
+        }
+
         if (string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(country))
         {
             _logger.LogWarning("City or country parameter is missing.");

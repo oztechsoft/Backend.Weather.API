@@ -13,6 +13,8 @@ namespace Backend.Weather.API
 
             builder.Services.AddControllers();
             builder.Services.AddHttpClient<IWeatherService, WeatherService>();
+            builder.Services.AddSingleton<RateLimitingService>();
+            builder.Services.AddMemoryCache();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();

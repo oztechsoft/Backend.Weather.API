@@ -26,7 +26,6 @@ dotnet build
 ```sh
 dotnet run
 ```
-By default, the API will run on `https://localhost:5001`.
 
 ## Usage
 

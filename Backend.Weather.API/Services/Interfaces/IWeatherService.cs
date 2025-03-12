@@ -1,6 +1,6 @@
 ﻿using Backend.Weather.API.Models;
 
-namespace Backend.Weather.API.Services
+namespace Backend.Weather.API.Services.Interfaces
 {
     public interface IWeatherService
     {

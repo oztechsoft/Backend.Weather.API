@@ -1,19 +1,17 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Backend.Weather.API.Services.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
-public class RateLimitingService
+public class RateLimitingService : IRateLimitingService
 {
     private readonly IMemoryCache _cache;
-    private readonly int _limit;
-    private readonly TimeSpan _timeWindow;
-    private readonly string[] _validApiKeys;
+    private readonly int _limit = 5;
+    private readonly TimeSpan _timeWindow = TimeSpan.FromMinutes(60);
+    private readonly string[] _validApiKeys = ["API_KEY_1", "API_KEY_2", "API_KEY_3", "API_KEY_4", "API_KEY_5"];
     private readonly ILogger<RateLimitingService> _logger;
 
-    public RateLimitingService(IMemoryCache cache, IConfiguration config, ILogger<RateLimitingService> logger)
+    public RateLimitingService(IMemoryCache cache, ILogger<RateLimitingService> logger)
     {
         _cache = cache;
-        _limit = config.GetValue<int>("ApiSettings:RateLimit");
-        _timeWindow = TimeSpan.FromMinutes(config.GetValue<int>("ApiSettings:RateLimitPeriodInMins"));
-        _validApiKeys = config.GetSection("ApiSettings:ApiKeys").Get<string[]>() ?? [];
         _logger = logger;
     }
 

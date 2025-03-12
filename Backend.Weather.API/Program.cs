@@ -1,5 +1,6 @@
 
 using Backend.Weather.API.Services;
+using Backend.Weather.API.Services.Interfaces;
 
 namespace Backend.Weather.API
 {
@@ -13,7 +14,7 @@ namespace Backend.Weather.API
 
             builder.Services.AddControllers();
             builder.Services.AddHttpClient<IWeatherService, WeatherService>();
-            builder.Services.AddSingleton<RateLimitingService>();
+            builder.Services.AddSingleton<IRateLimitingService, RateLimitingService>();
             builder.Services.AddMemoryCache();
             builder.Services.AddCors(options =>
             {

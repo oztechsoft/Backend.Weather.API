@@ -1,4 +1,4 @@
-using Backend.Weather.API.Services;
+using Backend.Weather.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Weather.API.Controllers;
@@ -9,9 +9,9 @@ public class WeatherController : ControllerBase
 {
     private readonly ILogger<WeatherController> _logger;
     private readonly IWeatherService _weatherService;
-    private readonly RateLimitingService _rateLimitingService;
+    private readonly IRateLimitingService _rateLimitingService;
 
-    public WeatherController(IWeatherService weatherService, RateLimitingService rateLimitingService, ILogger<WeatherController> logger)
+    public WeatherController(IWeatherService weatherService, IRateLimitingService rateLimitingService, ILogger<WeatherController> logger)
     {
         _weatherService = weatherService;
         _rateLimitingService = rateLimitingService;
@@ -25,7 +25,7 @@ public class WeatherController : ControllerBase
         {
             if (!_rateLimitingService.IsRequestAllowed(apiKey))
             {
-                return BadRequest("hourly limit has been exceeded");
+                return StatusCode(429, "Hourly rate limit has been exceeded.");
             }
 
             if (string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(country))

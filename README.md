@@ -27,6 +27,11 @@ dotnet build
 dotnet run
 ```
 
+### 4. Test the API
+```sh
+dotnet test
+```
+
 ## Usage
 
 ### **1. Fetch Weather Data**
